@@ -41,7 +41,7 @@ def index():
 
 
 ##REGISTER
-@app.route("/register/", methods=['GET','POST'])
+@app.route("/register", methods=['GET','POST'])
 def register():
     if(request.method == 'POST'):
         ##example of input data:
@@ -52,6 +52,7 @@ def register():
 ##          "geslo": "Luka123"
 ##        }
         podatki_json = request.get_json()
+        #print(podatki_json)
         ##Deviding sent data
         ime = podatki_json["ime"]
         priimek = podatki_json["priimek"]
@@ -80,7 +81,7 @@ def register():
 
 
 ##LOGIN
-@app.route("/login/", methods=['GET','POST'])
+@app.route("/login", methods=['GET','POST'])
 def login():
     if(request.method == 'POST'):
         ##example of input data:
