@@ -68,12 +68,12 @@ def register():
             db.session.execute("""SELECT register('%s', '%s', '%s', '%s');"""%(ime, priimek, email, geslo_h))
             db.session.commit()
             ##Returned data to program
-            return True, 201                
+            return jsonify({'bool': True}), 201                
         except Exception as e:
             print(e)
-            return False, 404       
+            return jsonify({'bool': False}), 404       
     else:
-        return "u sent cant use GET"
+        return jsonify({'type': "cant use GET"})
 
 
 
@@ -102,15 +102,15 @@ def login():
             r = db.session.execute("""SELECT login('%s', '%s');"""%(email, geslo_h)).scalar()
             db.session.commit()
             if(r==True):
-                return True, 201
+                return jsonify({'bool': True}), 201
             ##Returned data to program
             else:
-                return False                
+                return jsonify({'bool': False})                
         except Exception as e:
             print(e)
-            return "error", 404       
+            return jsonify({'bool': False}), 404   
     else:
-        return "u sent nothing"
+        return jsonify({'u sent': "nothing"})
 
 
 
