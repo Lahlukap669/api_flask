@@ -4,13 +4,14 @@ import hashlib
 from flask_cors import CORS
 app = Flask(__name__)
 
-CORS(app)
+
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://teecnvbl:ySNvS-XgSa_ql6SKZk87vdKyxwVKp3Ki@kandula.db.elephantsql.com:5432/teecnvbl"
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
+CORS(app)
 
 #Users
 ##class Users(db.Model):
