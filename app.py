@@ -35,6 +35,7 @@ def register():
 ##          "geslo": "Luka123"
 ##        }
         podatki_json = request.get_json()
+        #print(podatki_json)
         ##Deviding sent data
         ime = podatki_json["ime"]
         priimek = podatki_json["priimek"]
