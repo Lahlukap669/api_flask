@@ -158,8 +158,8 @@ def delete_playlist():
         return jsonify({'u sent': "nothing"})
 
 
-##ADD PLAYLIST
-@app.route("/add_playlist", methods=['GET','POST'])
+##UPDATE PLAYLIST
+@app.route("/update_playlist", methods=['GET','POST'])
 def update_playlist():
     if(request.method == 'POST'):
         ##example of input data:
@@ -193,6 +193,8 @@ def update_playlist():
         return jsonify({'u sent': "nothing"})
 
 
+
+##USER INFO
 @app.route("/userinfo", methods=['GET','POST'])
 def userinfo():
     if(request.method == 'POST'):
@@ -207,9 +209,14 @@ def userinfo():
 ##interaction db
         try:
             ##Called function
-            r = db.session.execute("""SELECT userinfo('%s');"""%(email)).scalar()
+            r = db.session.execute("""SELECT * FROM users WHERE email='%s' LIMIT 1;"""%(email)).first()
             db.session.commit()
-            return jsonify(r), 200
+            r=str(r)[1:-1]
+            r=r.replace(" ", "")
+            r=r.replace("'", "")
+            r=r.split(",")
+            r1 = {"id": int(r[0]), "ime": "%s"%(r[0]), "priimek": "%s"%(r[0]), "email": "%s"%(r[0]), "geslo": "%s"%(r[0]), "admin": int(r[5])}  
+            return r1, 200
 
         except Exception as e:
             print(e)
