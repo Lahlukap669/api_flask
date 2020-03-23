@@ -192,6 +192,34 @@ def update_playlist():
     else:
         return jsonify({'u sent': "nothing"})
 
+
+@app.route("/userinfo", methods=['GET','POST'])
+def update_playlist():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "user_id": 1,
+##          "ime": "Playlist1",
+##          "url": "http://www.yout...",
+##          "opis": "neki..."
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        email = podatki_json["email"]
+
+##interaction db
+        try:
+            ##Called function
+            r = db.session.execute("""SELECT userinfo('%s');"""%(email)).scalar()
+            db.session.commit()
+            return jsonify(r), 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({'bool': False}), 404   
+    else:
+        return jsonify({'u sent': "nothing"})
+
 ##new_user = Users(ime=ime, priimek=priimek, email=email, geslo=geslo_h)
 ##db.session.add(new_user)
 ##db.session.add("SELECT register(%s, %s, %s, %s)"%(ime, priimek, email, geslo))#new_user)
