@@ -13,23 +13,6 @@ db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 CORS(app)
 
-#Users
-##class Users(db.Model):
-##    __tablename__ = 'users'
-##
-##    id = db.Column(db.Integer, primary_key=True)
-##    ime = db.Column(db.String())
-##    priimek = db.Column(db.String())
-##    email = db.Column(db.String())
-##    geslo = db.Column(db.String())
-##
-##    def __init__(self, ime, priimek, email, geslo):
-##        self.ime = ime
-##        self.priimek = priimek
-##        self.email = email
-##        self.geslo = geslo
-
-
 @app.route("/", methods=['GET','POST'])
 def index():
     if(request.method == 'POST'):
@@ -41,7 +24,7 @@ def index():
 
 
 ##REGISTER
-@app.route("/register/", methods=['GET','POST'])
+@app.route("/register", methods=['GET','POST'])
 def register():
     if(request.method == 'POST'):
         ##example of input data:
@@ -76,11 +59,8 @@ def register():
         return jsonify({'type': "cant use GET"})
 
 
-
-
-
 ##LOGIN
-@app.route("/login/", methods=['GET','POST'])
+@app.route("/login", methods=['GET','POST'])
 def login():
     if(request.method == 'POST'):
         ##example of input data:
@@ -102,6 +82,41 @@ def login():
             r = db.session.execute("""SELECT login('%s', '%s');"""%(email, geslo_h)).scalar()
             db.session.commit()
             if(r==True):
+                return jsonify({"bool": True}), 201
+            ##Returned data to program
+            else:
+                return jsonify({"bool": False})                
+        except Exception as e:
+            print(e)
+            return jsonify({"bool": False}), 404   
+    else:
+        return jsonify({"u sent": "nothing"})
+
+
+##ADD PLAYLIST
+@app.route("/add_playlist", methods=['GET','POST'])
+def add_playlist():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "user_id": 1,
+##          "ime": "Playlist1",
+##          "url": "http://www.yout...",
+##          "opis": "neki..."
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        user_ID = podatki_json["user_id"]
+        imeP = podatki_json["ime"]
+        URL = podatki_json["url"]
+        Opis = podatki_json["opis"]
+
+##interaction db
+        try:
+            ##Called function
+            r = db.session.execute("""SELECT add_playlist('%s', '%s', '%s', '%s');"""%(user_ID, imeP, URL, Opis)).scalar()
+            db.session.commit()
+            if(r==True):
                 return jsonify({'bool': True}), 201
             ##Returned data to program
             else:
@@ -113,6 +128,68 @@ def login():
         return jsonify({'u sent': "nothing"})
 
 
+##DELETE PLAYLIST
+@app.route("/add_playlist", methods=['GET','POST'])
+def delete_playlist():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "pid": 1,
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        p_ID = podatki_json["pid"]
+
+##interaction db
+        try:
+            ##Called function
+            r = db.session.execute("""SELECT del_playlist(%d);"""%(p_ID)).scalar()
+            db.session.commit()
+            if(r==True):
+                return jsonify({'bool': True}), 201
+            ##Returned data to program
+            else:
+                return jsonify({'bool': False})                
+        except Exception as e:
+            print(e)
+            return jsonify({'bool': False}), 404   
+    else:
+        return jsonify({'u sent': "nothing"})
+
+
+##ADD PLAYLIST
+@app.route("/add_playlist", methods=['GET','POST'])
+def update_playlist():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "user_id": 1,
+##          "ime": "Playlist1",
+##          "url": "http://www.yout...",
+##          "opis": "neki..."
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        user_ID = podatki_json["user_id"]
+        imeP = podatki_json["ime"]
+        URL = podatki_json["url"]
+        Opis = podatki_json["opis"]
+
+##interaction db
+        try:
+            ##Called function
+            r = db.session.execute("""SELECT update_playlist('%s', '%s', '%s', '%s');"""%(user_ID, imeP, URL, Opis)).scalar()
+            db.session.commit()
+            if(r==True):
+                return jsonify({'bool': True}), 201
+            ##Returned data to program
+            else:
+                return jsonify({'bool': False})                
+        except Exception as e:
+            print(e)
+            return jsonify({'bool': False}), 404   
+    else:
+        return jsonify({'u sent': "nothing"})
 
 ##new_user = Users(ime=ime, priimek=priimek, email=email, geslo=geslo_h)
 ##db.session.add(new_user)
