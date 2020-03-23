@@ -215,7 +215,7 @@ def userinfo():
             r=r.replace(" ", "")
             r=r.replace("'", "")
             r=r.split(",")
-            r1 = {"id": int(r[0]), "ime": "%s"%(r[0]), "priimek": "%s"%(r[0]), "email": "%s"%(r[0]), "geslo": "%s"%(r[0]), "admin": int(r[5])}  
+            r1 = {"id": int(r[0]), "ime": "%s"%(r[1]), "priimek": "%s"%(r[2]), "email": "%s"%(r[3]), "geslo": "%s"%(r[4]), "admin": int(r[5])}  
             return r1, 200
 
         except Exception as e:
