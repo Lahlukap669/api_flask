@@ -194,7 +194,7 @@ def update_playlist():
 
 
 @app.route("/userinfo", methods=['GET','POST'])
-def update_playlist():
+def userinfo():
     if(request.method == 'POST'):
         ##example of input data:
 ##        {
