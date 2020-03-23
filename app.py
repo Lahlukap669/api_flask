@@ -130,7 +130,7 @@ def add_playlist():
 
 
 ##DELETE PLAYLIST
-@app.route("/add_playlist", methods=['GET','POST'])
+@app.route("/del_playlist", methods=['GET','POST'])
 def delete_playlist():
     if(request.method == 'POST'):
         ##example of input data:
@@ -198,10 +198,7 @@ def userinfo():
     if(request.method == 'POST'):
         ##example of input data:
 ##        {
-##          "user_id": 1,
-##          "ime": "Playlist1",
-##          "url": "http://www.yout...",
-##          "opis": "neki..."
+##          "email": "luka1.lah@gmail.ocm",
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
