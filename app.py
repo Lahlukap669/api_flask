@@ -139,12 +139,12 @@ def delete_playlist():
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
-        p_ID = podatki_json["pid"]
+        p_ID = podatki_json["id"]
 
 ##interaction db
         try:
             ##Called function
-            r = db.session.execute("""SELECT del_playlist(%d);"""%(p_ID)).scalar()
+            r = db.session.execute("""SELECT del_playlist(%s);"""%(p_ID)).scalar()
             db.session.commit()
             if(r==True):
                 return jsonify({'bool': True}), 201
@@ -164,14 +164,14 @@ def update_playlist():
     if(request.method == 'POST'):
         ##example of input data:
 ##        {
-##          "user_id": 1,
+##          "id": 1,
 ##          "ime": "Playlist1",
 ##          "url": "http://www.yout...",
 ##          "opis": "neki..."
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
-        user_ID = podatki_json["user_id"]
+        ID = podatki_json["id"]
         imeP = podatki_json["ime"]
         URL = podatki_json["url"]
         Opis = podatki_json["opis"]
@@ -179,13 +179,13 @@ def update_playlist():
 ##interaction db
         try:
             ##Called function
-            r = db.session.execute("""SELECT update_playlist('%s', '%s', '%s', '%s');"""%(user_ID, imeP, URL, Opis)).scalar()
+            r = db.session.execute("""SELECT update_playlist(%s, '%s', '%s', '%s');"""%(ID, imeP, URL, Opis)).scalar()
             db.session.commit()
             if(r==True):
                 return jsonify({'bool': True}), 201
             ##Returned data to program
             else:
-                return jsonify({'bool': False})                
+                return jsonify({'bool': False}), 404                
         except Exception as e:
             print(e)
             return jsonify({'bool': False}), 404   
@@ -240,13 +240,18 @@ def playlists():
 ##interaction db
         try:
             ##Called function
-            r = db.session.execute("""SELECT * FROM playlists WHERE user_id=(SELECT id FROM users WHERE email='%s') LIMIT 1;"""%(email)).fetchall()
+            r = db.session.execute("""SELECT * FROM playlists WHERE user_id=(SELECT id FROM users WHERE email='%s');"""%(email)).fetchall()
             db.session.commit()
             #r=str(r)[1:-1]
-            print(r)
-            for i in range(len(r)):
+            r2= {"playlists":[]}
+            data = r2.get("playlists")
+            count = 0
+            for i in range(0,len(r)):
                 r1 = {"id": int(r[i][0]), "user_id": int(r[i][1]), "name": "%s"%(r[i][2]), "url": "%s"%(r[i][3]), "opis": "%s"%(r[i][4])}  
-            return r1, 200
+                data.append(r1)
+                count+=1
+            r2["count"]=count
+            return r2, 200
 
         except Exception as e:
             print(e)
