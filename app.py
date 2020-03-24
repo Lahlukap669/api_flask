@@ -153,6 +153,8 @@ def delete_playlist():
 ##interaction db
         try:
             ##Called function
+            db.session.execute("""DELETE FROM songs WHERE playlist_id=%s;"""%(p_ID))
+            db.session.commit()
             r = db.session.execute("""SELECT del_playlist(%s);"""%(p_ID)).scalar()
             db.session.commit()
             if(r==True):
@@ -269,6 +271,41 @@ def playlists():
         return jsonify({'u sent': "nothing"})
 
 
+##SONGS
+@app.route("/songs", methods=['GET','POST'])
+def songs():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "id": 1
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        id = podatki_json["id"]
+
+##interaction db
+        try:
+            ##Called function
+            r = db.session.execute("""SELECT * FROM songs WHERE playlist_id=%s;"""%(id)).fetchall()
+            db.session.commit()
+            #r=str(r)[1:-1]
+            r2= {"playlists":[]}
+            data = r2.get("playlists")
+            count = 0
+            for i in range(0,len(r)):
+                r1 = {"id": int(r[i][0]), "playlist_id": int(r[i][1]), "ime": "%s"%(r[i][2]), "izvajalec": "%s"%(r[i][3])}  
+                data.append(r1)
+                count+=1
+            r2["count"]=count
+            return r2, 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({'bool': False}), 404   
+    else:
+        return jsonify({'u sent': "nothing"})
+
+
 ##DOWNLOAD
 @app.route('/Songs/<path:path>')
 def send_js(path):
@@ -279,13 +316,11 @@ def download():
     if(request.method == 'POST'):
         ##example of input data:
 ##        {
-##          "id": 3,
 ##          "name": "Kul_muzika",
 ##          "url": "http..."
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
-        id = podatki_json["id"]
         name = podatki_json["name"]
         url = podatki_json["url"]
 
@@ -317,7 +352,7 @@ def download():
                     ##data = zipfile.ZipInfo(filename)
                     ##data.date_time = time.localtime(time.time())[:6]
                     ##data.compress_type = zipfile.ZIP_DEFLATED
-                    db.session.execute("""SELECT add_song(%s, '%s', '%s');"""%(id, filename, "")).scalar()
+                    db.session.execute("""SELECT add_song('%s', '%s', '%s');"""%(url, filename, "")).scalar()
                     db.session.commit()
                     zf.write(os.path.join(dirname, filename))
             zf.close() 
