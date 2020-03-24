@@ -279,11 +279,13 @@ def download():
     if(request.method == 'POST'):
         ##example of input data:
 ##        {
+##          "id": 3,
 ##          "name": "Kul_muzika",
 ##          "url": "http..."
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
+        id = podatki_json["id"]
         name = podatki_json["name"]
         url = podatki_json["url"]
 
@@ -296,7 +298,7 @@ def download():
                     os.mkdir(os.getcwd() + "/ff")
                 if os.path.exists(os.getcwd() + "/Songs/"+name)==False:
                     os.mkdir(os.getcwd() + "/Songs/"+name)
-                
+
                 for file in os.listdir('.'):
                     if not file.endswith('py') and not file.endswith('md') and not file.endswith('spec'):
                         try:
@@ -315,6 +317,8 @@ def download():
                     ##data = zipfile.ZipInfo(filename)
                     ##data.date_time = time.localtime(time.time())[:6]
                     ##data.compress_type = zipfile.ZIP_DEFLATED
+                    db.session.execute("""SELECT add_song(%s, '%s', '%s');"""%(id, filename, "")).scalar()
+                    db.session.commit()
                     zf.write(os.path.join(dirname, filename))
             zf.close() 
             ##x = ftp.storbinary("STOR " + i, zf) 
