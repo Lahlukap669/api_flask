@@ -1,4 +1,4 @@
-from flask import Flask, jsonify, request
+from flask import Flask, jsonify, request, send_file, send_from_directory
 import json
 import hashlib
 from flask_cors import CORS
@@ -6,11 +6,16 @@ import youtube_dl
 import os
 import shutil
 from ffmpy import FFmpeg
+import zipfile
+import time
+from io import BytesIO
 app = Flask(__name__)
 
 
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
+
+app = Flask(__name__, static_url_path='')
 
 app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://hfprgeev:QEUmvQfSGTj1Pueh3q02mjUxUl0Fa93e@kandula.db.elephantsql.com:5432/hfprgeev"
 db = SQLAlchemy(app)
@@ -265,6 +270,10 @@ def playlists():
 
 
 ##DOWNLOAD
+@app.route('/Songs/<path:path>')
+def send_js(path):
+    return send_from_directory('Songs', path)
+
 @app.route("/download", methods=['GET','POST'])
 def download():
     if(request.method == 'POST'):
@@ -281,26 +290,44 @@ def download():
 ##interaction db
         try:
             with youtube_dl.YoutubeDL() as ydl:
-            info_dict = ydl.extract_info(url, download=True)
-      
-            if os.path.exists(os.getcwd() + "/ff")==False:
-                os.mkdir(os.getcwd() + "/ff")
-            if os.path.exists(os.getcwd() + "/"+name)==False:
-                os.mkdir(os.getcwd() + "/"+name)
+                info_dict = ydl.extract_info(url, download=True)
+        
+                if os.path.exists(os.getcwd() + "/ff")==False:
+                    os.mkdir(os.getcwd() + "/ff")
+                if os.path.exists(os.getcwd() + "/Songs/"+name)==False:
+                    os.mkdir(os.getcwd() + "/Songs/"+name)
+                
+                for file in os.listdir('.'):
+                    if not file.endswith('py') and not file.endswith('md') and not file.endswith('spec'):
+                        try:
+                            filename = file.split(".")[0]
+                            d = os.getcwd()
+                            ff = FFmpeg(executable='ff/ffmpeg/bin/ffmpeg.exe',inputs={file: None}, outputs={"./Songs/"+name+"/" + filename + ".mp3": None})
+                            ff.run()
+                            os.remove(file)
+                        except:
+                            pass
             
-            for file in os.listdir('.'):
-                if not file.endswith('py') and not file.endswith('md') and not file.endswith('spec'):
-                    try:
-                        filename = file.split(".")[0]
-                        d = os.getcwd()
-                        ff = FFmpeg(executable='ff/ffmpeg/bin/ffmpeg.exe',inputs={file: None}, outputs={"./"+name+"/" + filename + ".mp3": None})
-                        ff.run()
-                        os.remove(file)
-                    except:
-                        pass
+            zf = zipfile.ZipFile("Songs/"+name+".zip", "w")
+            for dirname, subdirs, files in os.walk("Songs/"+name):
+                zf.write(dirname)
+                for filename in files:
+                    ##data = zipfile.ZipInfo(filename)
+                    ##data.date_time = time.localtime(time.time())[:6]
+                    ##data.compress_type = zipfile.ZIP_DEFLATED
+                    zf.write(os.path.join(dirname, filename))
+            zf.close() 
+            ##x = ftp.storbinary("STOR " + i, zf) 
             
-            return jsonify({'bool': False}), 200
-            
+            #data = zipfile.ZipInfo(individualFile['fileName'])
+            #data.date_time = time.localtime(time.time())[:6]
+            #data.compress_type = zipfile.ZIP_DEFLATED
+            #zf.writestr(data,individualFile['fileData'])
+            ##return app.send_static_file("/"+name)
+            return jsonify({ 'bool': True, "url": f'/Songs/{name}.zip'}), 200
+            #return send_file(data, mimetype='application/zip', as_attachment=True, attachment_filename='data.zip')
+            #return jsonify({'bool': False}), 200
+
         except Exception as e:
             print(e)
             return jsonify({'bool': False}), 404   
