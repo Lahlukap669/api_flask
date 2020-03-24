@@ -9,6 +9,7 @@ from ffmpy import FFmpeg
 import zipfile
 import time
 from io import BytesIO
+import re
 app = Flask(__name__)
 
 
@@ -282,12 +283,14 @@ def songs():
         podatki_json = request.get_json()
         ##Deviding sent data
         id = podatki_json["id"]
+        print(id)
 
 ##interaction db
         try:
             ##Called function
             r = db.session.execute("""SELECT * FROM songs WHERE playlist_id=%s;"""%(id)).fetchall()
             db.session.commit()
+            print(r)
             #r=str(r)[1:-1]
             r2= {"playlists":[]}
             data = r2.get("playlists")
@@ -297,6 +300,7 @@ def songs():
                 data.append(r1)
                 count+=1
             r2["count"]=count
+            print(r2)
             return r2, 200
 
         except Exception as e:
@@ -321,8 +325,16 @@ def download():
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
-        name = podatki_json["name"]
+        name1 = podatki_json["name"]
         url = podatki_json["url"]
+        strings = ["'", '"', ",", "_", "/", "+", " "]
+        name = ""
+        for i in name1:
+            if i not in strings:
+                name += i
+            else:
+                continue
+
 
 ##interaction db
         try:
@@ -337,6 +349,7 @@ def download():
                 for file in os.listdir('.'):
                     if not file.endswith('py') and not file.endswith('md') and not file.endswith('spec'):
                         try:
+                            
                             filename = file.split(".")[0]
                             d = os.getcwd()
                             ff = FFmpeg(executable='ff/ffmpeg/bin/ffmpeg.exe',inputs={file: None}, outputs={"./Songs/"+name+"/" + filename + ".mp3": None})
@@ -349,10 +362,16 @@ def download():
             for dirname, subdirs, files in os.walk("Songs/"+name):
                 zf.write(dirname)
                 for filename in files:
+                    filename1 = ""
+                    for i in filename:
+                        if i not in strings:
+                            filename1 += i
+                        else:
+                            continue
                     ##data = zipfile.ZipInfo(filename)
                     ##data.date_time = time.localtime(time.time())[:6]
                     ##data.compress_type = zipfile.ZIP_DEFLATED
-                    db.session.execute("""SELECT add_song('%s', '%s', '%s');"""%(url, filename, "")).scalar()
+                    db.session.execute("""SELECT add_song('%s', '%s', '%s');"""%(url, filename1, "")).scalar()
                     db.session.commit()
                     zf.write(os.path.join(dirname, filename))
             zf.close() 
