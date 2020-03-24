@@ -2,6 +2,10 @@ from flask import Flask, jsonify, request
 import json
 import hashlib
 from flask_cors import CORS
+import youtube_dl
+import os
+import shutil
+from ffmpy import FFmpeg
 app = Flask(__name__)
 
 
@@ -253,6 +257,50 @@ def playlists():
             r2["count"]=count
             return r2, 200
 
+        except Exception as e:
+            print(e)
+            return jsonify({'bool': False}), 404   
+    else:
+        return jsonify({'u sent': "nothing"})
+
+
+##DOWNLOAD
+@app.route("/download", methods=['GET','POST'])
+def download():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "name": "Kul_muzika",
+##          "url": "http..."
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        name = podatki_json["name"]
+        url = podatki_json["url"]
+
+##interaction db
+        try:
+            with youtube_dl.YoutubeDL() as ydl:
+            info_dict = ydl.extract_info(url, download=True)
+      
+            if os.path.exists(os.getcwd() + "/ff")==False:
+                os.mkdir(os.getcwd() + "/ff")
+            if os.path.exists(os.getcwd() + "/"+name)==False:
+                os.mkdir(os.getcwd() + "/"+name)
+            
+            for file in os.listdir('.'):
+                if not file.endswith('py') and not file.endswith('md') and not file.endswith('spec'):
+                    try:
+                        filename = file.split(".")[0]
+                        d = os.getcwd()
+                        ff = FFmpeg(executable='ff/ffmpeg/bin/ffmpeg.exe',inputs={file: None}, outputs={"./"+name+"/" + filename + ".mp3": None})
+                        ff.run()
+                        os.remove(file)
+                    except:
+                        pass
+            
+            return jsonify({'bool': False}), 200
+            
         except Exception as e:
             print(e)
             return jsonify({'bool': False}), 404   
