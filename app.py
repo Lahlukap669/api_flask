@@ -8,7 +8,7 @@ app = Flask(__name__)
 from flask_sqlalchemy import SQLAlchemy
 from flask_migrate import Migrate
 
-app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://teecnvbl:ySNvS-XgSa_ql6SKZk87vdKyxwVKp3Ki@kandula.db.elephantsql.com:5432/teecnvbl"
+app.config['SQLALCHEMY_DATABASE_URI'] = "postgres://hfprgeev:QEUmvQfSGTj1Pueh3q02mjUxUl0Fa93e@kandula.db.elephantsql.com:5432/hfprgeev"
 db = SQLAlchemy(app)
 migrate = Migrate(app, db)
 CORS(app)
@@ -107,15 +107,15 @@ def add_playlist():
 ##        }
         podatki_json = request.get_json()
         ##Deviding sent data
-        user_ID = podatki_json["user_id"]
+        user_ID = int(podatki_json["user_id"])
         imeP = podatki_json["ime"]
         URL = podatki_json["url"]
         Opis = podatki_json["opis"]
-
+        print(user_ID, imeP, URL, Opis)
 ##interaction db
         try:
             ##Called function
-            r = db.session.execute("""SELECT add_playlist('%s', '%s', '%s', '%s');"""%(user_ID, imeP, URL, Opis)).scalar()
+            r = db.session.execute("""SELECT add_playlist(%d, '%s', '%s', '%s');"""%(user_ID, imeP, URL, Opis)).scalar()
             db.session.commit()
             if(r==True):
                 return jsonify({'bool': True}), 201
