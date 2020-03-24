@@ -224,6 +224,37 @@ def userinfo():
     else:
         return jsonify({'u sent': "nothing"})
 
+
+##PLAYLISTS
+@app.route("/playlists", methods=['GET','POST'])
+def playlists():
+    if(request.method == 'POST'):
+        ##example of input data:
+##        {
+##          "email": "luka1.lah@gmail.ocm",
+##        }
+        podatki_json = request.get_json()
+        ##Deviding sent data
+        email = podatki_json["email"]
+
+##interaction db
+        try:
+            ##Called function
+            r = db.session.execute("""SELECT * FROM playlists WHERE user_id=(SELECT id FROM users WHERE email='%s') LIMIT 1;"""%(email)).fetchall()
+            db.session.commit()
+            #r=str(r)[1:-1]
+            print(r)
+            for i in range(len(r)):
+                r1 = {"id": int(r[i][0]), "user_id": int(r[i][1]), "name": "%s"%(r[i][2]), "url": "%s"%(r[i][3]), "opis": "%s"%(r[i][4])}  
+            return r1, 200
+
+        except Exception as e:
+            print(e)
+            return jsonify({'bool': False}), 404   
+    else:
+        return jsonify({'u sent': "nothing"})
+
+
 ##new_user = Users(ime=ime, priimek=priimek, email=email, geslo=geslo_h)
 ##db.session.add(new_user)
 ##db.session.add("SELECT register(%s, %s, %s, %s)"%(ime, priimek, email, geslo))#new_user)
