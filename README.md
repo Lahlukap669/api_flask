@@ -1,7 +1,7 @@
 # api_flask_music2go
 This is aplication programming interface for music2go application in Java. It enables you to save playlists from youtube, and see songs for them... and of course download them. So you insert a name for playlist and its url and you get all the songs from playlist downloaded onto your computer.
 
-# !Disclaimer
+## !Disclaimer
 In some countries act of downloading music from youtube can be illigal or even cause fines. However it is definitely prohibited by youtubes licence and agreements.
 
 <img src="api_fotos/Screenshot_1.png" width="900" height="550"/>
