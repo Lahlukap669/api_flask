@@ -24,7 +24,7 @@ In some countries act of downloading music from youtube can be illigal or even c
 * ffmpeg
 
 ## License
-<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/License_icon-gpl-2.svg/1200px-License_icon-gpl-2.svg.png" width="150" height="50"/>
+<img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/License_icon-gpl-2.svg/1200px-License_icon-gpl-2.svg.png" width="80" height="80"/>
 
 ## Authors
 ```Python
