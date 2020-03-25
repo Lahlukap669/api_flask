@@ -4,7 +4,7 @@ This is aplication programming interface for music2go application in Java. It en
 # !Disclaimer
 In some countries act of downloading music from youtube can be illigal or even cause fines. However it is definitely prohibited by youtubes licence and agreements.
 
-<img src="app_fotos/Screenshot_1.png" width="1000" height="600"/>   <img src="src/assets/domov.jpg" width="280" height="430"/>   <img src="src/assets/meni.jpg" width="280" height="430"/>
+<img src="api_fotos/Screenshot_1.png" width="900" height="400"/>   <src="api_fotos/Screenshot_1.png" width="900" height="400"/>
 
 
 ## Getting started
